@@ -1,105 +1,194 @@
 # AI Debate Judge
 
-A real-time debate platform that allows users to create debates, join sides, present arguments, and receive AI-generated verdicts based on reasoning and performance. It features live interaction and AI scoring.
+AI Debate Judge is a real-time debate platform where users can:
 
-Deployed Link: https://ai-debate-judge-weld.vercel.app
----
+- register/login
+- create or join debates
+- submit arguments side-by-side
+- request AI judgment
+- see scores, verdict, and reasoning
 
-## 🧠 Tech Stack Used
+The app is split into 3 services:
 
-### **Frontend**
-- **Next.js (React Framework)** – for building the user interface  
-- **Tailwind CSS** – for responsive, modern design  
-- **Lucide-react & Framer Motion** – for animations and icons  
-- **React Hot Toast** – for notifications and alerts  
+- `frontend` (Next.js)
+- `backend` (Node.js + Express + Socket.IO + MongoDB)
+- `ai_service` (FastAPI + Groq evaluation)
 
-### **Backend**
-- **Node.js with Express.js**
-- **MongoDB (Database)**
-- **JWT Authentication (Security)**
-- **Socket.IO (Real-time Communication)**
-- **FastAPI** – high-performance backend framework  
-- **Transformers (Hugging Face)** – for zero-shot classification model (`facebook/bart-large-mnli`)  
-- **AsyncIO** – to handle concurrent model evaluations  
-- **Pydantic** – for input validation  
-- **CORS Middleware** – to allow frontend-backend communication  
+## Live URL
 
+- Frontend: `https://ai-debate-judge-weld.vercel.app`
 
----
+## Current Features
 
-## ⚙️ Setup Instructions
+- JWT authentication (`/api/auth/register`, `/api/auth/login`, `/api/auth/me`)
+- Debate creation with configurable argument limit (`1`, `3`, `5` per side)
+- Side positions constrained to `For` / `Against`
+- Real-time updates via Socket.IO
+- AI judging through FastAPI endpoint `POST /judge`
+- User debate stats (total, wins, losses, win rate)
 
-1. **Clone the repository:**
+## Tech Stack
 
-```bash
+### Frontend
+
+- Next.js 14
+- React 18
+- Tailwind CSS
+- Axios
+- Socket.IO Client
+- react-hot-toast
+
+### Backend
+
+- Node.js + Express
+- Mongoose + MongoDB
+- Socket.IO
+- JWT + bcrypt
+- express-validator
+
+### AI Service
+
+- FastAPI
+- httpx
+- pydantic
+- python-dotenv
+- Groq Chat Completions API
+
+## Project Structure
+
+```text
+AI-Debate-judge/
+	README.md
+	ai_service/
+		ai_judge_free.py
+		requirements.txt
+		.env.example
+	backend/
+		src/
+			index.js
+			routes/
+			models/
+			middleware/
+			utils/
+		package.json
+		.env.example
+	frontend/
+		src/
+			app/
+			lib/
+		package.json
+		.env.example
+```
+
+## Prerequisites
+
+- Node.js 18+ (recommended)
+- Python 3.10+
+- MongoDB (local or Atlas)
+- A Groq API key
+
+## Environment Variables
+
+### `backend/.env`
+
+Use `backend/.env.example` as base.
+
+Required:
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+
+Common:
+
+- `PORT=5000`
+- `NODE_ENV=development`
+- `FRONTEND_URL=http://localhost:3000`
+- `AI_SERVICE_URL=http://localhost:8000`
+
+### `frontend/.env.local`
+
+Use `frontend/.env.example` as base.
+
+- `NEXT_PUBLIC_API_URL=http://localhost:5000`
+- `NEXT_PUBLIC_WS_URL=http://localhost:5000`
+
+### `ai_service/.env`
+
+Use `ai_service/.env.example` as base.
+
+- `GROQ_API_KEY=your_groq_api_key`
+- `AI_SERVICE_URL=http://localhost:8000` (optional local reference)
+
+## Local Setup (Windows PowerShell)
+
+### 1. Clone
+
+```powershell
 git clone https://github.com/harshlamba18/AI-Debate-judge.git
+Set-Location "AI-Debate-judge"
 ```
 
- 
-2. **Navigate to the backend directory:**
+### 2. Backend
 
-```bash
-cd AI-Debate-judge/backend
-```
-
-3. **Create your environment filet**
-
-```bash
-cp .env.example .env
-JWT_SECRET="replace_this_with_a_very_strong_random_secret"
-```
-
-4.**Run the backend Server**
-
-```bash
+```powershell
+Set-Location ".\backend"
 npm install
+Copy-Item .env.example .env
+# edit .env with your values
 npm run dev
 ```
 
-5.**Navigate to frontend directory**
+Backend runs on `http://localhost:5000`.
 
-```bash
-cd AI-Debate-judge/frontend
-cp .env.example .env.local
+### 3. Frontend
+
+Open a new terminal:
+
+```powershell
+Set-Location "<path-to>\AI-Debate-judge\frontend"
 npm install
-```
-
-6. **Run the frontend Server**
-
-```bash
+Copy-Item .env.example .env.local
 npm run dev
 ```
-7. **Navigate to the ai_service directory and set environment variables:**
-```bash
-cd AI-Debate-judge/ai_service
-cp .env.example .env
-```
 
-8. **Create virtual environment and activate it(for cmd)**
+Frontend runs on `http://localhost:3000`.
 
-```bash
-python -m venv venv  
-venv\Scripts\activate
-```
+### 4. AI Service
 
-9. **Install dependencies**
+Open a third terminal:
 
-```bash
+```powershell
+Set-Location "<path-to>\AI-Debate-judge\ai_service"
+python -m venv venv
+.\venv\Scripts\Activate.ps1
 pip install --upgrade pip
 pip install -r requirements.txt
-```
-9. **Run FastAPI**
-
-```bash
+Copy-Item .env.example .env
+# edit .env and set GROQ_API_KEY
 uvicorn ai_judge_free:app --reload --host 0.0.0.0 --port 8000
 ```
 
-10. **To test the real-time features of the application (like a chat or debate), you need to simulate two different users.
+AI service runs on `http://localhost:8000`.
 
-Open your first browser (e.g., Chrome) and go to:
-http://localhost:3000
+## API Notes
 
-Open a second, different browser (e.g., Firefox, Safari) or a private/incognito window in your first browser. Go to the same address:
-http://localhost:3000
+### Backend
 
-You can now use the application from both browser windows as if you were two separate users.**
+- Root: `GET /`
+- Health: `GET /health`
+- Auth: `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
+- Debates: `GET /api/debates`, `POST /api/debates`, `POST /api/debates/:id/join`, `POST /api/debates/:id/judge`
+- Arguments: `POST /api/arguments`, `GET /api/arguments/debate/:debateId`
+
+### AI Service
+
+- Root: `GET /`
+- Health: `GET /health`
+- Judge: `POST /judge`
+
+## Deployment Notes
+
+- Frontend is suitable for Vercel.
+- AI service is suitable for Render (FastAPI web service).
+- Set backend `AI_SERVICE_URL` to your deployed AI service base URL (example: `https://<service>.onrender.com`).
+
