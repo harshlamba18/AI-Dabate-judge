@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Scale, Brain, Shield, Zap } from "lucide-react";
+import { Scale, Brain, Clock3, Sparkles, ArrowRight } from "lucide-react";
 import { isAuthenticated } from "@/lib/auth";
 
 export default function Home() {
@@ -15,205 +15,158 @@ export default function Home() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f4f9ff] via-white to-[#f3e8ff]">
-      
-      {/* NAVBAR */}
-      <nav className="bg-white/60 backdrop-blur-sm border-b border-white/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            
-            {/* Logo */}
-            <div
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 shadow-md">
-                <Scale className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <span className="text-xl font-extrabold text-gray-900">
-                  AI Debate Judge
-                </span>
-                <div className="text-xs text-gray-500 -mt-0.5">Fair. Fast. Verifiable.</div>
-              </div>
-            </div>
-
-            {/* Nav Buttons */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push("/login")}
-                className="px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => router.push("/register")}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold shadow hover:scale-[1.01] transform transition"
-              >
-                Get Started
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </nav>
-
-      {/* MAIN CONTENT */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-
-        {/* HERO */}
-        <section className="text-center space-y-8">
-          <h1 className="text-5xl sm:text-6xl font-extrabold leading-tight text-gray-900">
-            The Future of{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600">
-              Fair Debates
-            </span>
-          </h1>
-
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Experience unbiased, AI-powered debate judging on a transparent Web3 platform.
-            Every verdict is immutable, auditable, and recorded on-chain for trust and
-            accountability.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-4 mt-4">
-            <button
-              onClick={() => router.push("/register")}
-              className="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-violet-600 text-white text-lg font-semibold shadow-lg hover:shadow-2xl transform hover:-translate-y-0.5 transition"
-            >
-              Start Debating Now
-            </button>
-
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="px-5 py-3 rounded-lg border border-gray-200 bg-white/60 backdrop-blur-sm text-gray-800 font-medium hover:scale-[1.01] transition"
-            >
-              Browse Debates
-            </button>
-          </div>
-
-          {/* Stats */}
-          <div className="mt-6 flex flex-wrap justify-center gap-4">
-            <StatBadge title="AI Judging" subtitle="Automated & consistent" />
-            <StatBadge title="Blockchain" subtitle="Immutable verdicts" />
-            <StatBadge title="Real-time" subtitle="Live debates & updates" />
-          </div>
-        </section>
-
-        {/* FEATURES */}
-        <section className="mt-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Features</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mt-2">
-              Built for fairness, transparency, and ease — whether you're hosting a rapid debate
-              or a formal adjudication.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <FeatureCard
-              icon={<Brain className="w-10 h-10" />}
-              title="AI-Powered Judging"
-              description="Models evaluate clarity, logic, and persuasiveness automatically."
-              accent="from-blue-500 to-blue-700"
-            />
-            <FeatureCard
-              icon={<Shield className="w-10 h-10" />}
-              title="Blockchain Verified"
-              description="Verdicts are recorded immutably for audit and trust."
-              accent="from-green-500 to-green-600"
-            />
-            <FeatureCard
-              icon={<Zap className="w-10 h-10" />}
-              title="Real-Time Debates"
-              description="Engage live with immediate updates and argument flow."
-              accent="from-purple-500 to-purple-700"
-            />
-            <FeatureCard
-              icon={<Scale className="w-10 h-10" />}
-              title="Fair & Unbiased"
-              description="Consistent evaluations remove human bias and variance."
-              accent="from-orange-400 to-orange-600"
-            />
-          </div>
-        </section>
-
-        {/* HOW IT WORKS */}
-        <section className="mt-16">
-          <div className="max-w-4xl mx-auto bg-white/70 backdrop-blur-md border border-white/40 rounded-2xl p-8 shadow-lg">
-            <h3 className="text-2xl font-semibold text-gray-900 text-center mb-6">How It Works</h3>
-
-            <div className="grid gap-6 md:grid-cols-3">
-              <Step number="1" title="Create or Join" description="Start a new debate or join an existing one." />
-              <Step number="2" title="Present Arguments" description="Take turns presenting arguments and rebuttals." />
-              <Step number="3" title="AI Judges" description="AI evaluates and publishes the verdict on-chain." />
-            </div>
-          </div>
-        </section>
-
-      </main>
-
-      {/* FOOTER */}
-      <footer className="bg-gray-900 text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center">
-              <Scale className="w-5 h-5 text-white" />
+    <div className="min-h-screen px-4 py-6 sm:px-8 sm:py-8">
+      <div className="mx-auto max-w-6xl">
+        <nav className="surface-card sticky top-4 z-20 mb-10 flex items-center justify-between px-4 py-3 sm:px-6">
+          <button
+            className="flex items-center gap-3 text-left"
+            onClick={() => router.push("/")}
+            type="button"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#0f766e,#0b5d58)] text-white">
+              <Scale className="h-6 w-6" />
             </div>
             <div>
-              <div className="font-semibold">AI Debate Judge</div>
-              <div className="text-xs text-gray-300">Built for SETs IntraSoc Hackathon • 2025</div>
+              <p className="display-face text-lg">AI Debate Judge</p>
+              <p className="text-xs text-slate-500">Objective scoring for real-time debates</p>
             </div>
-          </div>
+          </button>
 
-          <div className="text-sm text-gray-400">
-            &copy; 2025 AI Debate Judge. All rights reserved.
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.push("/login")}
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => router.push("/register")}
+              className="brand-button text-sm"
+            >
+              Create Account
+            </button>
           </div>
-        </div>
-      </footer>
+        </nav>
 
+        <main className="space-y-12">
+          <section className="surface-card overflow-hidden p-7 sm:p-10">
+            <div className="grid items-center gap-8 lg:grid-cols-2">
+              <div>
+                <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-amber-100/70 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-800">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  AI-Assisted Debating
+                </p>
+                <h1 className="display-face text-4xl leading-tight text-slate-900 sm:text-5xl">
+                  Debate with structure.
+                  <br />
+                  Win with clarity.
+                </h1>
+                <p className="mt-4 max-w-xl text-slate-600 sm:text-lg">
+                  Host focused debates, submit arguments in real time, and get consistent AI scoring based on logic, relevance, and persuasiveness.
+                </p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <button onClick={() => router.push("/register")} className="brand-button inline-flex items-center gap-2">
+                    Start Debating
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => router.push("/dashboard")}
+                    className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Explore Debates
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <StatBadge title="Live Rooms" subtitle="Join and argue instantly" />
+                <StatBadge title="AI Verdict" subtitle="Scores both sides" />
+                <StatBadge title="Guided Flow" subtitle="Clear turn structure" />
+                <StatBadge title="Fair Outcomes" subtitle="Same criteria each round" />
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <div className="mb-5">
+              <h2 className="display-face text-3xl text-slate-900">Built For Competitive Thinking</h2>
+              <p className="mt-2 text-slate-600">A focused interface for fast rounds and structured argument quality.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <FeatureCard icon={<Brain className="h-7 w-7" />} title="AI Scoring" description="Each side is rated with consistent judging criteria." />
+              <FeatureCard icon={<Clock3 className="h-7 w-7" />} title="Real-Time Pace" description="Live rooms keep rebuttals and responses flowing." />
+              <FeatureCard icon={<Scale className="h-7 w-7" />} title="Clear Verdicts" description="Reasoning is returned alongside final side scores." />
+            </div>
+          </section>
+
+          <section className="surface-card p-6 sm:p-8">
+            <h3 className="display-face text-2xl text-slate-900">How It Works</h3>
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              <Step number="01" title="Create or Join" description="Open a room or join an ongoing debate from dashboard." />
+              <Step number="02" title="Submit Arguments" description="Each side presents points until the argument limit is reached." />
+              <Step number="03" title="Request AI Judgment" description="Trigger scoring and review verdict reasoning instantly." />
+            </div>
+          </section>
+        </main>
+
+        <footer className="mt-12 border-t border-slate-300/70 py-6 text-sm text-slate-600">
+          <p>AI Debate Judge • Built for practical, fair debate sessions.</p>
+        </footer>
+      </div>
     </div>
   );
 }
 
-/* --- Small Presentational Components --- */
-
 function StatBadge({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div className="px-3 py-2 bg-white/60 backdrop-blur-sm border border-white/30 rounded-full text-sm flex items-center gap-3 shadow-sm">
-      <div className="w-8 h-8 flex items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-violet-500 text-white">
+    <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-md bg-[linear-gradient(135deg,#0f766e,#0b5d58)] text-white">
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden>
           <path d="M12 4v16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
-      <div className="leading-tight">
-        <div className="font-semibold text-gray-800">{title}</div>
-        <div className="text-xs text-gray-600 -mt-0.5">{subtitle}</div>
-      </div>
+      <p className="font-semibold text-slate-900">{title}</p>
+      <p className="text-sm text-slate-600">{subtitle}</p>
     </div>
   );
 }
 
-function FeatureCard({ icon, title, description, accent }: any) {
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
   return (
-    <div className="p-6 rounded-2xl bg-white/70 backdrop-blur-sm border border-white/30 shadow hover:shadow-xl transition">
-      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-lg mb-4 bg-gradient-to-br ${accent} text-white shadow-sm`}>
+    <div className="surface-card p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+      <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#0f766e,#0b5d58)] text-white">
         {icon}
       </div>
-      <h4 className="text-lg font-semibold text-gray-900 mb-2">{title}</h4>
-      <p className="text-gray-600 text-sm">{description}</p>
+      <h4 className="display-face text-xl text-slate-900">{title}</h4>
+      <p className="mt-2 text-sm text-slate-600">{description}</p>
     </div>
   );
 }
 
-function Step({ number, title, description }: any) {
+function Step({
+  number,
+  title,
+  description,
+}: {
+  number: string;
+  title: string;
+  description: string;
+}) {
   return (
-    <div className="text-center">
-      <div className="mx-auto mb-3 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 text-white flex items-center justify-center font-bold text-lg shadow">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="mb-3 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold tracking-wide text-amber-800">
         {number}
       </div>
-      <h5 className="text-lg font-semibold text-gray-900 mb-1">{title}</h5>
-      <p className="text-gray-600 text-sm">{description}</p>
+      <h5 className="font-semibold text-slate-900">{title}</h5>
+      <p className="mt-1 text-sm text-slate-600">{description}</p>
     </div>
   );
 }

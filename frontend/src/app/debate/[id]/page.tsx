@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { io, Socket } from 'socket.io-client';
-import { Send, Scale, ArrowLeft, Trophy, ExternalLink } from 'lucide-react';
+import { Send, Scale, ArrowLeft, Trophy } from 'lucide-react';
 import { debateAPI, argumentAPI } from '@/lib/api';
 import { getUser, isAuthenticated } from '@/lib/auth';
 import toast from 'react-hot-toast';
@@ -143,8 +143,8 @@ export default function DebateRoom() {
 
   if (!debate) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="text-gray-500">Loading debate...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-slate-500">Loading debate...</div>
       </div>
     );
   }
@@ -157,66 +157,51 @@ export default function DebateRoom() {
     sideBArgs.length >= debate.settings.argumentLimit;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+    <div className="min-h-screen p-4 sm:p-6">
       {/* Navbar */}
-      <nav className="bg-white/90 backdrop-blur-lg shadow-md rounded-2xl p-4 mb-6 max-w-7xl mx-auto flex justify-between items-center">
+      <nav className="surface-card mx-auto mb-6 flex max-w-7xl items-center justify-between p-4">
         <button
           onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+          className="flex items-center gap-2 text-slate-700 transition hover:text-slate-900"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back to Dashboard</span>
         </button>
         <div className="flex items-center gap-2">
-          <Scale className="w-6 h-6 text-blue-600" />
-          <span className="text-lg font-semibold text-gray-900">{debate.topic}</span>
+          <Scale className="h-6 w-6 text-teal-700" />
+          <span className="display-face text-lg font-semibold text-slate-900">{debate.topic}</span>
         </div>
         <div className="w-32"></div>
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {debate.status === 'completed' && debate.aiJudgment && (
-          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-lg p-6 mb-6">
+          <div className="surface-card mb-6 p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Trophy className="w-6 h-6 text-yellow-500" />
-              <h2 className="text-2xl font-bold text-gray-900">AI Judge Verdict</h2>
+              <Trophy className="h-6 w-6 text-amber-600" />
+              <h2 className="display-face text-2xl font-bold text-slate-900">AI Judge Verdict</h2>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div className={`p-6 rounded-lg ${debate.aiJudgment.sideAScore > debate.aiJudgment.sideBScore ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50'}`}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Side A Score</h3>
-                <p className="text-4xl font-bold text-blue-600">{debate.aiJudgment.sideAScore}</p>
+              <div className={`rounded-lg p-6 ${debate.aiJudgment.sideAScore > debate.aiJudgment.sideBScore ? 'border-2 border-teal-500 bg-teal-50' : 'bg-slate-100'}`}>
+                <h3 className="mb-2 text-lg font-semibold text-slate-900">Side A Score</h3>
+                <p className="text-4xl font-bold text-teal-700">{debate.aiJudgment.sideAScore}</p>
               </div>
-              <div className={`p-6 rounded-lg ${debate.aiJudgment.sideBScore > debate.aiJudgment.sideAScore ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50'}`}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Side B Score</h3>
-                <p className="text-4xl font-bold text-purple-600">{debate.aiJudgment.sideBScore}</p>
+              <div className={`rounded-lg p-6 ${debate.aiJudgment.sideBScore > debate.aiJudgment.sideAScore ? 'border-2 border-amber-500 bg-amber-50' : 'bg-slate-100'}`}>
+                <h3 className="mb-2 text-lg font-semibold text-slate-900">Side B Score</h3>
+                <p className="text-4xl font-bold text-amber-700">{debate.aiJudgment.sideBScore}</p>
               </div>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Verdict</h3>
-              <p className="text-gray-700">{debate.aiJudgment.verdict}</p>
+            <div className="mb-4 rounded-lg bg-slate-100 p-4">
+              <h3 className="mb-2 font-semibold text-slate-900">Verdict</h3>
+              <p className="text-slate-700">{debate.aiJudgment.verdict}</p>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Reasoning</h3>
-              <p className="text-gray-700">{debate.aiJudgment.reasoning}</p>
+            <div className="rounded-lg bg-slate-100 p-4">
+              <h3 className="mb-2 font-semibold text-slate-900">Reasoning</h3>
+              <p className="text-slate-700">{debate.aiJudgment.reasoning}</p>
             </div>
-
-            {debate.aiJudgment.transactionHash && (
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span className="font-medium">Blockchain Record:</span>
-                <a
-                  href={`https://sepolia.etherscan.io/tx/${debate.aiJudgment.transactionHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                >
-                  <span className="font-mono">{debate.aiJudgment.transactionHash.slice(0, 10)}...</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-            )}
           </div>
         )}
 
@@ -224,13 +209,13 @@ export default function DebateRoom() {
           {/* Sides Column */}
           <div className="lg:col-span-1 space-y-4">
             <SideCard side="A" users={debate.sideA.users} position={debate.sideA.position} currentUserId={user?.id} argumentsCount={sideAArgs.length} argumentLimit={debate.settings.argumentLimit} color="blue" />
-            <SideCard side="B" users={debate.sideB.users} position={debate.sideB.position} currentUserId={user?.id} argumentsCount={sideBArgs.length} argumentLimit={debate.settings.argumentLimit} color="purple" />
+            <SideCard side="B" users={debate.sideB.users} position={debate.sideB.position} currentUserId={user?.id} argumentsCount={sideBArgs.length} argumentLimit={debate.settings.argumentLimit} color="amber" />
 
             {canJudge && userSide && (
               <button
                 onClick={handleJudge}
                 disabled={judging}
-                className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold disabled:opacity-50 transition"
+                className="w-full rounded-lg bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
               >
                 {judging ? 'Requesting AI Judge...' : 'Request AI Judgment'}
               </button>
@@ -238,25 +223,25 @@ export default function DebateRoom() {
           </div>
 
           {/* Arguments Column */}
-          <div className="lg:col-span-3 bg-white/90 backdrop-blur-lg rounded-2xl shadow-md flex flex-col h-[calc(100vh-200px)]">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Debate Arguments</h2>
+          <div className="surface-card lg:col-span-3 flex h-[calc(100vh-200px)] flex-col">
+            <div className="border-b border-slate-200 p-4">
+              <h2 className="text-xl font-semibold text-slate-900">Debate Arguments</h2>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {debateArguments.length === 0 ? (
-                <div className="text-center text-gray-500 py-12">No arguments yet. Be the first to submit!</div>
+                <div className="py-12 text-center text-slate-500">No arguments yet. Be the first to submit.</div>
               ) : (
                 debateArguments.map((arg) => (
                   <div
                     key={arg._id}
-                    className={`p-4 rounded-lg ${arg.side === 'A' ? 'bg-blue-50 ml-0 mr-12' : 'bg-purple-50 ml-12 mr-0'}`}
+                    className={`rounded-lg p-4 ${arg.side === 'A' ? 'mr-12 ml-0 bg-teal-50' : 'mr-0 ml-12 bg-amber-50'}`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-sm text-gray-900">{arg.userId.username} (Side {arg.side})</span>
-                      <span className="text-xs text-gray-500">{new Date(arg.createdAt).toLocaleTimeString()}</span>
+                      <span className="text-sm font-semibold text-slate-900">{arg.userId.username} (Side {arg.side})</span>
+                      <span className="text-xs text-slate-500">{new Date(arg.createdAt).toLocaleTimeString()}</span>
                     </div>
-                    <p className="text-gray-700">{arg.content}</p>
+                    <p className="text-slate-700">{arg.content}</p>
                   </div>
                 ))
               )}
@@ -264,7 +249,7 @@ export default function DebateRoom() {
             </div>
 
             {userSide && debate.status === 'active' && (
-              <form onSubmit={handleSubmitArgument} className="p-4 border-t border-gray-200">
+              <form onSubmit={handleSubmitArgument} className="border-t border-slate-200 p-4">
                 {canSubmitArgument() ? (
                   <div className="flex space-x-2">
                     <input
@@ -272,20 +257,20 @@ export default function DebateRoom() {
                       value={newArgument}
                       onChange={(e) => setNewArgument(e.target.value)}
                       placeholder="Enter your argument..."
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 rounded-lg border border-slate-300 px-4 py-2 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-200"
                       disabled={sending}
                     />
                     <button
                       type="submit"
                       disabled={sending || !newArgument.trim()}
-                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 transition"
+                      className="brand-button flex items-center gap-2 px-6"
                     >
                       <Send className="w-4 h-4" />
                       <span>{sending ? 'Sending...' : 'Send'}</span>
                     </button>
                   </div>
                 ) : (
-                  <div className="text-center text-gray-500 py-2">You have reached the argument limit for this debate.</div>
+                  <div className="py-2 text-center text-slate-500">You have reached the argument limit for this debate.</div>
                 )}
               </form>
             )}
@@ -297,21 +282,26 @@ export default function DebateRoom() {
 }
 
 function SideCard({ side, users, position, currentUserId, argumentsCount, argumentLimit, color }: any) {
+  const isTeal = color === 'blue';
+  const currentUserClass = isTeal
+    ? 'bg-teal-100 text-teal-900 font-semibold'
+    : 'bg-amber-100 text-amber-900 font-semibold';
+
   return (
-    <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-md p-4">
-      <h3 className="font-semibold text-gray-900 mb-2">Side {side}</h3>
-      <p className="text-sm text-gray-600 mb-2">{position}</p>
+    <div className="surface-card p-4">
+      <h3 className="mb-2 font-semibold text-slate-900">Side {side}</h3>
+      <p className="mb-2 text-sm text-slate-600">{position}</p>
       {users.map((u: any) => (
         <div
           key={u._id}
-          className={`text-sm px-3 py-2 rounded mb-2 ${
-            u._id === currentUserId ? `bg-${color}-100 text-${color}-900 font-semibold` : 'bg-gray-100 text-gray-700'
+          className={`mb-2 rounded px-3 py-2 text-sm ${
+            u._id === currentUserId ? currentUserClass : 'bg-slate-100 text-slate-700'
           }`}
         >
           {u.username}
         </div>
       ))}
-      <p className="text-xs text-gray-500 mt-2">
+      <p className="mt-2 text-xs text-slate-500">
         Arguments: {argumentsCount}/{argumentLimit}
       </p>
     </div>

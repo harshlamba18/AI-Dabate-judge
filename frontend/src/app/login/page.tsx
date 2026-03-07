@@ -35,24 +35,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 flex items-center justify-center px-4">
-      {/* Top-left Home Button */}
+    <div className="relative min-h-screen px-4 py-8">
       <button
         onClick={goToHome}
-        className="absolute top-4 left-4 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-xl transition"
+        className="absolute left-4 top-4 rounded-lg border border-slate-300 bg-white/90 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
       >
         Home
       </button>
 
-      <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md">
+      <div className="surface-card w-full max-w-md p-8 sm:p-10">
         <div className="flex items-center justify-center mb-8">
-          <Scale className="w-12 h-12 text-blue-600 mr-3 animate-bounce" />
-          <h1 className="text-4xl font-extrabold text-gray-900">Login</h1>
+          <Scale className="mr-3 h-11 w-11 text-teal-700" />
+          <h1 className="display-face text-4xl font-extrabold text-slate-900">Login</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-800 mb-2">
+            <label className="mb-2 block text-sm font-medium text-slate-800">
               Email
             </label>
             <input
@@ -61,12 +60,12 @@ export default function LoginPage() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="you@example.com"
-              className="w-full px-4 py-3 border border-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-blue-500 transition bg-gray-50 text-gray-900"
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 transition focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-200"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-800 mb-2">
+            <label className="mb-2 block text-sm font-medium text-slate-800">
               Password
             </label>
             <input
@@ -75,22 +74,22 @@ export default function LoginPage() {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               placeholder="••••••••"
-              className="w-full px-4 py-3 border border-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-blue-500 transition bg-gray-50 text-gray-900"
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 transition focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-200"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="brand-button w-full"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-700">
+        <p className="mt-6 text-center text-slate-700">
           Don't have an account?{' '}
-          <Link href="/register" className="text-blue-700 hover:text-blue-800 font-semibold">
+          <Link href="/register" className="font-semibold text-teal-700 hover:text-teal-800">
             Register here
           </Link>
         </p>
