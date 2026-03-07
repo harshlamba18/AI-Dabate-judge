@@ -40,6 +40,6 @@ torch_cache/
 .DS_Store
 Thumbs.db
 
-# Web3 / blockchain sensitive files
+# Sensitive key files
 *.json
 *.key

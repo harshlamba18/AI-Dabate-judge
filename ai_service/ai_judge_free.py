@@ -6,7 +6,6 @@ import httpx
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from blockchain_record import store_ai_result
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -114,13 +113,7 @@ async def judge_debate(data: DebateInput):
         f"Verdict: {verdict}"
     )
 
-    try:
-        tx_hash = await asyncio.to_thread(
-            store_ai_result, data.topic, side_a_score, side_b_score, verdict
-        )
-    except Exception as e:
-        print("Blockchain error:", e)
-        tx_hash = None
+    tx_hash = None
 
     # ✅ Same response shape your frontend expects
     return {

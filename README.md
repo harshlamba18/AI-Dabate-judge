@@ -1,6 +1,6 @@
 # AI Debate Judge
 
-A real-time debate platform that allows users to create debates, join sides, present arguments, and receive AI-generated verdicts based on reasoning and performance. It features live interaction, AI scoring, and blockchain integration to securely record AI judgments.
+A real-time debate platform that allows users to create debates, join sides, present arguments, and receive AI-generated verdicts based on reasoning and performance. It features live interaction and AI scoring.
 
 Deployed Link: https://ai-debate-judge-weld.vercel.app
 ---
@@ -24,13 +24,6 @@ Deployed Link: https://ai-debate-judge-weld.vercel.app
 - **Pydantic** – for input validation  
 - **CORS Middleware** – to allow frontend-backend communication  
 
-
-### **Blockchain Integration**
-- **Web3.py** – to connect and interact with Ethereum blockchain  
-- **Infura** – as a remote Ethereum node provider  
-- **Smart Contract (Solidity)** – to store AI judgment results securely  
-- **dotenv** – for environment variable management  
-- **hashlib** – to hash debate data before storing on-chain  
 
 ---
 
