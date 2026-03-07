@@ -105,7 +105,7 @@ export default function Home() {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Features</h2>
             <p className="text-gray-600 max-w-2xl mx-auto mt-2">
-              Built for fairness, transparency, and ease — whether you’re hosting a rapid debate
+              Built for fairness, transparency, and ease — whether you're hosting a rapid debate
               or a formal adjudication.
             </p>
           </div>
