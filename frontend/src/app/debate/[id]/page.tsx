@@ -37,7 +37,6 @@ export default function DebateRoom() {
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
-      console.log('Connected to socket');
       newSocket.emit('join-debate', debateId);
     });
 
@@ -74,7 +73,7 @@ export default function DebateRoom() {
     try {
       const { data } = await debateAPI.getById(debateId);
       setDebate(data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load debate');
     }
   };
@@ -83,7 +82,7 @@ export default function DebateRoom() {
     try {
       const { data } = await argumentAPI.getByDebate(debateId);
       setDebateArguments(data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load arguments');
     }
   };
@@ -98,7 +97,7 @@ export default function DebateRoom() {
   const canSubmitArgument = () => {
     const side = getUserSide();
     if (!side || !debate) return false;
-    const sideArgs = debateArguments.filter(a => a.side === side);
+    const sideArgs = debateArguments.filter((a) => a.side === side);
     return debate.status === 'active' && sideArgs.length < debate.settings.argumentLimit;
   };
 
@@ -126,7 +125,7 @@ export default function DebateRoom() {
   };
 
   const handleJudge = async () => {
-    if (!window.confirm('Are you sure you want to request AI judgment? This cannot be undone.')) return;
+    if (!window.confirm('Are you sure you want to request AI judgment?')) return;
 
     setJudging(true);
     try {
@@ -143,103 +142,134 @@ export default function DebateRoom() {
 
   if (!debate) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-slate-500">Loading debate...</div>
       </div>
     );
   }
 
   const userSide = getUserSide();
-  const sideAArgs = debateArguments.filter(a => a.side === 'A');
-  const sideBArgs = debateArguments.filter(a => a.side === 'B');
-  const canJudge = debate.status === 'active' &&
+  const sideAArgs = debateArguments.filter((a) => a.side === 'A');
+  const sideBArgs = debateArguments.filter((a) => a.side === 'B');
+
+  const canJudge =
+    debate.status === 'active' &&
     sideAArgs.length >= debate.settings.argumentLimit &&
     sideBArgs.length >= debate.settings.argumentLimit;
 
   return (
-    <div className="min-h-screen p-4 sm:p-6">
-      {/* Navbar */}
-      <nav className="surface-card mx-auto mb-6 flex max-w-7xl items-center justify-between p-4">
+    <div className="min-h-screen bg-slate-50 px-4 py-6">
+      <nav className="mx-auto mb-6 flex max-w-7xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
         <button
           onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-2 text-slate-700 transition hover:text-slate-900"
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
         >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back to Dashboard</span>
+          <ArrowLeft className="h-4 w-4" />
+          Back
         </button>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-3 text-slate-900">
           <Scale className="h-6 w-6 text-teal-700" />
-          <span className="display-face text-lg font-semibold text-slate-900">{debate.topic}</span>
+          <span className="text-lg font-semibold">{debate.topic}</span>
         </div>
-        <div className="w-32"></div>
+
+        <div className="w-20" />
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="mx-auto max-w-7xl space-y-6">
         {debate.status === 'completed' && debate.aiJudgment && (
-          <div className="surface-card mb-6 p-6">
-            <div className="flex items-center gap-2 mb-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
               <Trophy className="h-6 w-6 text-amber-600" />
-              <h2 className="display-face text-2xl font-bold text-slate-900">AI Judge Verdict</h2>
+              <h2 className="text-xl font-semibold text-slate-900">AI Verdict</h2>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div className={`rounded-lg p-6 ${debate.aiJudgment.sideAScore > debate.aiJudgment.sideBScore ? 'border-2 border-teal-500 bg-teal-50' : 'bg-slate-100'}`}>
-                <h3 className="mb-2 text-lg font-semibold text-slate-900">Side A Score</h3>
-                <p className="text-4xl font-bold text-teal-700">{debate.aiJudgment.sideAScore}</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl bg-teal-50 p-5">
+                <p className="text-sm text-slate-600">Side A Score</p>
+                <p className="text-3xl font-bold text-teal-700">
+                  {debate.aiJudgment.sideAScore}
+                </p>
               </div>
-              <div className={`rounded-lg p-6 ${debate.aiJudgment.sideBScore > debate.aiJudgment.sideAScore ? 'border-2 border-amber-500 bg-amber-50' : 'bg-slate-100'}`}>
-                <h3 className="mb-2 text-lg font-semibold text-slate-900">Side B Score</h3>
-                <p className="text-4xl font-bold text-amber-700">{debate.aiJudgment.sideBScore}</p>
+
+              <div className="rounded-xl bg-amber-50 p-5">
+                <p className="text-sm text-slate-600">Side B Score</p>
+                <p className="text-3xl font-bold text-amber-700">
+                  {debate.aiJudgment.sideBScore}
+                </p>
               </div>
             </div>
 
-            <div className="mb-4 rounded-lg bg-slate-100 p-4">
-              <h3 className="mb-2 font-semibold text-slate-900">Verdict</h3>
+            <div className="mt-5 rounded-xl bg-slate-100 p-4">
+              <p className="font-semibold text-slate-900">Verdict</p>
               <p className="text-slate-700">{debate.aiJudgment.verdict}</p>
             </div>
 
-            <div className="rounded-lg bg-slate-100 p-4">
-              <h3 className="mb-2 font-semibold text-slate-900">Reasoning</h3>
+            <div className="mt-4 rounded-xl bg-slate-100 p-4">
+              <p className="font-semibold text-slate-900">Reasoning</p>
               <p className="text-slate-700">{debate.aiJudgment.reasoning}</p>
             </div>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-4 gap-6">
-          {/* Sides Column */}
-          <div className="lg:col-span-1 space-y-4">
-            <SideCard side="A" users={debate.sideA.users} position={debate.sideA.position} currentUserId={user?.id} argumentsCount={sideAArgs.length} argumentLimit={debate.settings.argumentLimit} color="blue" />
-            <SideCard side="B" users={debate.sideB.users} position={debate.sideB.position} currentUserId={user?.id} argumentsCount={sideBArgs.length} argumentLimit={debate.settings.argumentLimit} color="amber" />
+        <div className="grid gap-6 lg:grid-cols-4">
+          <div className="space-y-4">
+            <SideCard
+              side="A"
+              users={debate.sideA.users}
+              position={debate.sideA.position}
+              currentUserId={user?.id}
+              argumentsCount={sideAArgs.length}
+              argumentLimit={debate.settings.argumentLimit}
+              color="teal"
+            />
+
+            <SideCard
+              side="B"
+              users={debate.sideB.users}
+              position={debate.sideB.position}
+              currentUserId={user?.id}
+              argumentsCount={sideBArgs.length}
+              argumentLimit={debate.settings.argumentLimit}
+              color="amber"
+            />
 
             {canJudge && userSide && (
               <button
                 onClick={handleJudge}
                 disabled={judging}
-                className="w-full rounded-lg bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                className="w-full rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
               >
-                {judging ? 'Requesting AI Judge...' : 'Request AI Judgment'}
+                {judging ? 'Judging...' : 'Request AI Judgment'}
               </button>
             )}
           </div>
 
-          {/* Arguments Column */}
-          <div className="surface-card lg:col-span-3 flex h-[calc(100vh-200px)] flex-col">
-            <div className="border-b border-slate-200 p-4">
-              <h2 className="text-xl font-semibold text-slate-900">Debate Arguments</h2>
+          <div className="flex h-[70vh] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-3">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h2 className="font-semibold text-slate-900">Arguments</h2>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 space-y-4 overflow-y-auto p-5">
               {debateArguments.length === 0 ? (
-                <div className="py-12 text-center text-slate-500">No arguments yet. Be the first to submit.</div>
+                <div className="py-10 text-center text-sm text-slate-500">
+                  No arguments yet
+                </div>
               ) : (
                 debateArguments.map((arg) => (
                   <div
                     key={arg._id}
-                    className={`rounded-lg p-4 ${arg.side === 'A' ? 'mr-12 ml-0 bg-teal-50' : 'mr-0 ml-12 bg-amber-50'}`}
+                    className={`max-w-xl rounded-xl px-4 py-3 text-sm ${
+                      arg.side === 'A'
+                        ? 'bg-teal-50'
+                        : 'ml-auto bg-amber-50'
+                    }`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-semibold text-slate-900">{arg.userId.username} (Side {arg.side})</span>
-                      <span className="text-xs text-slate-500">{new Date(arg.createdAt).toLocaleTimeString()}</span>
+                    <div className="mb-1 flex justify-between text-xs text-slate-500">
+                      <span className="font-semibold text-slate-800">
+                        {arg.userId.username} • Side {arg.side}
+                      </span>
+                      <span>{new Date(arg.createdAt).toLocaleTimeString()}</span>
                     </div>
                     <p className="text-slate-700">{arg.content}</p>
                   </div>
@@ -251,26 +281,28 @@ export default function DebateRoom() {
             {userSide && debate.status === 'active' && (
               <form onSubmit={handleSubmitArgument} className="border-t border-slate-200 p-4">
                 {canSubmitArgument() ? (
-                  <div className="flex space-x-2">
+                  <div className="flex gap-2">
                     <input
                       type="text"
                       value={newArgument}
                       onChange={(e) => setNewArgument(e.target.value)}
                       placeholder="Enter your argument..."
-                      className="flex-1 rounded-lg border border-slate-300 px-4 py-2 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-200"
-                      disabled={sending}
+                      className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
                     />
+
                     <button
                       type="submit"
                       disabled={sending || !newArgument.trim()}
-                      className="brand-button flex items-center gap-2 px-6"
+                      className="flex items-center gap-2 rounded-xl bg-teal-800 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-900 disabled:opacity-60"
                     >
-                      <Send className="w-4 h-4" />
-                      <span>{sending ? 'Sending...' : 'Send'}</span>
+                      <Send className="h-4 w-4" />
+                      {sending ? 'Sending...' : 'Send'}
                     </button>
                   </div>
                 ) : (
-                  <div className="py-2 text-center text-slate-500">You have reached the argument limit for this debate.</div>
+                  <div className="text-center text-sm text-slate-500">
+                    Argument limit reached
+                  </div>
                 )}
               </form>
             )}
@@ -281,28 +313,42 @@ export default function DebateRoom() {
   );
 }
 
-function SideCard({ side, users, position, currentUserId, argumentsCount, argumentLimit, color }: any) {
-  const isTeal = color === 'blue';
-  const currentUserClass = isTeal
-    ? 'bg-teal-100 text-teal-900 font-semibold'
-    : 'bg-amber-100 text-amber-900 font-semibold';
+function SideCard({
+  side,
+  users,
+  position,
+  currentUserId,
+  argumentsCount,
+  argumentLimit,
+  color,
+}: any) {
+  const highlight =
+    color === 'teal'
+      ? 'bg-teal-100 text-teal-900'
+      : 'bg-amber-100 text-amber-900';
 
   return (
-    <div className="surface-card p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <h3 className="mb-2 font-semibold text-slate-900">Side {side}</h3>
-      <p className="mb-2 text-sm text-slate-600">{position}</p>
-      {users.map((u: any) => (
-        <div
-          key={u._id}
-          className={`mb-2 rounded px-3 py-2 text-sm ${
-            u._id === currentUserId ? currentUserClass : 'bg-slate-100 text-slate-700'
-          }`}
-        >
-          {u.username}
-        </div>
-      ))}
-      <p className="mt-2 text-xs text-slate-500">
-        Arguments: {argumentsCount}/{argumentLimit}
+      <p className="mb-3 text-sm text-slate-600">{position}</p>
+
+      <div className="space-y-2">
+        {users.map((u: any) => (
+          <div
+            key={u._id}
+            className={`rounded-lg px-3 py-2 text-sm ${
+              u._id === currentUserId
+                ? highlight
+                : 'bg-slate-100 text-slate-700'
+            }`}
+          >
+            {u.username}
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-3 text-xs text-slate-500">
+        Arguments {argumentsCount}/{argumentLimit}
       </p>
     </div>
   );

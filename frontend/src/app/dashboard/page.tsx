@@ -49,7 +49,7 @@ export default function Dashboard() {
     try {
       const { data } = await debateAPI.getAll({ status: 'waiting,active' });
       setDebates(data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load debates');
     } finally {
       setLoading(false);
@@ -64,58 +64,77 @@ export default function Dashboard() {
   if (loadingAuth) return null;
 
   return (
-    <div className="min-h-screen p-4 sm:p-6">
-      {/* Navbar */}
-      <nav className="surface-card mb-8 flex max-w-7xl items-center justify-between p-4">
-        <div className="flex items-center space-x-2">
-          <Scale className="h-8 w-8 text-teal-700" />
-          <span className="display-face text-2xl font-bold text-slate-900">AI Debate Judge</span>
+    <div className="min-h-screen bg-slate-50 px-4 py-6">
+      <nav className="mx-auto mb-8 flex max-w-7xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Scale className="h-7 w-7 text-teal-700" />
+          <span className="text-xl font-semibold text-slate-900">
+            AI Debate Judge
+          </span>
         </div>
+
         <div className="flex items-center gap-4">
-          <span className="text-slate-700">
+          <span className="text-sm text-slate-600">
             Welcome, <span className="font-semibold">{user.username}</span>
           </span>
+
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-medium text-white transition hover:bg-red-700"
+            className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="h-4 w-4" />
             Logout
           </button>
         </div>
       </nav>
 
-      {/* Stats */}
-      <div className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto mb-8">
-        <StatCard icon={<MessageSquare className="w-8 h-8 text-teal-700" />} title="Total Debates" value={user.debateStats?.total || 0} />
-        <StatCard icon={<Trophy className="w-8 h-8 text-amber-600" />} title="Wins" value={user.debateStats?.wins || 0} />
+      <div className="mx-auto mb-8 grid max-w-7xl gap-5 md:grid-cols-3">
         <StatCard
-          icon={<Users className="w-8 h-8 text-slate-700" />}
+          icon={<MessageSquare className="h-7 w-7 text-teal-700" />}
+          title="Total Debates"
+          value={user.debateStats?.total || 0}
+        />
+        <StatCard
+          icon={<Trophy className="h-7 w-7 text-amber-600" />}
+          title="Wins"
+          value={user.debateStats?.wins || 0}
+        />
+        <StatCard
+          icon={<Users className="h-7 w-7 text-slate-700" />}
           title="Win Rate"
           value={
             user.debateStats?.total > 0
-              ? `${Math.round((user.debateStats.wins / user.debateStats.total) * 100)}%`
+              ? `${Math.round(
+                  (user.debateStats.wins / user.debateStats.total) * 100
+                )}%`
               : '0%'
           }
         />
       </div>
 
-      {/* Debates List */}
-      <div className="surface-card mx-auto max-w-7xl p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="display-face text-2xl font-bold text-slate-900">Available Debates</h2>
+      <div className="mx-auto max-w-7xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-slate-900">
+            Available Debates
+          </h2>
+
           <button
             onClick={() => setShowCreateModal(true)}
-            className="brand-button flex items-center gap-2"
+            className="flex items-center gap-2 rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-900"
           >
-            <Plus className="w-4 h-4" /> Create Debate
+            <Plus className="h-4 w-4" />
+            Create Debate
           </button>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading debates...</div>
+          <div className="py-12 text-center text-slate-500">
+            Loading debates...
+          </div>
         ) : debates.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">No debates available. Create one to get started!</div>
+          <div className="py-12 text-center text-slate-500">
+            No debates available
+          </div>
         ) : (
           <div className="space-y-4">
             {debates.map((debate) => (
@@ -140,12 +159,12 @@ export default function Dashboard() {
 
 function StatCard({ icon, title, value }: any) {
   return (
-    <div className="surface-card flex items-center justify-between p-6 transition hover:-translate-y-0.5 hover:shadow-md">
+    <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
       <div>
-        <p className="mb-1 text-sm text-slate-600">{title}</p>
-        <p className="text-3xl font-bold text-slate-900">{value}</p>
+        <p className="text-sm text-slate-600">{title}</p>
+        <p className="text-2xl font-bold text-slate-900">{value}</p>
       </div>
-      <div>{icon}</div>
+      {icon}
     </div>
   );
 }
@@ -159,7 +178,7 @@ function DebateCard({ debate }: any) {
     setJoining(true);
     try {
       await debateAPI.join(debate._id, side);
-      toast.success(`Joined Side ${side}!`);
+      toast.success(`Joined Side ${side}`);
       router.push(`/debate/${debate._id}`);
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Failed to join');
@@ -172,41 +191,51 @@ function DebateCard({ debate }: any) {
   const isParticipant = !canJoinA || !canJoinB;
 
   return (
-    <div className="surface-card p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <h3 className="mb-2 text-xl font-semibold text-slate-900">{debate.topic}</h3>
-          {debate.description && <p className="mb-3 text-sm text-slate-600">{debate.description}</p>}
-          <div className="flex items-center gap-4 text-sm">
-            <span
-              className={`px-3 py-1 rounded-full ${
-                debate.status === 'waiting'
-                  ? 'bg-amber-100 text-amber-800'
-                  : debate.status === 'active'
-                  ? 'bg-teal-100 text-teal-800'
-                  : 'bg-slate-100 text-slate-800'
-              }`}
-            >
-              {debate.status.charAt(0).toUpperCase() + debate.status.slice(1)}
-            </span>
-            <span className="text-slate-500">{debate.type === '1v1' ? '1 vs 1' : 'Team'}</span>
-          </div>
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-slate-900">
+          {debate.topic}
+        </h3>
+
+        {debate.description && (
+          <p className="mt-1 text-sm text-slate-600">{debate.description}</p>
+        )}
+
+        <div className="mt-3 flex items-center gap-3 text-xs">
+          <span
+            className={`rounded-full px-3 py-1 ${
+              debate.status === 'waiting'
+                ? 'bg-amber-100 text-amber-800'
+                : 'bg-teal-100 text-teal-800'
+            }`}
+          >
+            {debate.status}
+          </span>
+
+          <span className="text-slate-500">
+            {debate.type === '1v1' ? '1 vs 1' : 'Team'}
+          </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="rounded-lg bg-teal-50 p-4">
-          <p className="mb-2 text-sm font-semibold text-slate-700">Side A</p>
-          <p className="mb-2 text-xs text-slate-600">{debate.sideA.position || 'For'}</p>
-          <p className="text-sm text-slate-700">
-            {debate.sideA.users.length > 0 ? debate.sideA.users.map((u: any) => u.username).join(', ') : 'Waiting...'}
+      <div className="mb-4 grid grid-cols-2 gap-4">
+        <div className="rounded-xl bg-teal-50 p-4">
+          <p className="text-sm font-semibold text-slate-700">Side A</p>
+          <p className="text-xs text-slate-600">{debate.sideA.position}</p>
+          <p className="mt-1 text-sm text-slate-700">
+            {debate.sideA.users.length > 0
+              ? debate.sideA.users.map((u: any) => u.username).join(', ')
+              : 'Waiting'}
           </p>
         </div>
-        <div className="rounded-lg bg-amber-50 p-4">
-          <p className="mb-2 text-sm font-semibold text-slate-700">Side B</p>
-          <p className="mb-2 text-xs text-slate-600">{debate.sideB.position || 'Against'}</p>
-          <p className="text-sm text-slate-700">
-            {debate.sideB.users.length > 0 ? debate.sideB.users.map((u: any) => u.username).join(', ') : 'Waiting...'}
+
+        <div className="rounded-xl bg-amber-50 p-4">
+          <p className="text-sm font-semibold text-slate-700">Side B</p>
+          <p className="text-xs text-slate-600">{debate.sideB.position}</p>
+          <p className="mt-1 text-sm text-slate-700">
+            {debate.sideB.users.length > 0
+              ? debate.sideB.users.map((u: any) => u.username).join(', ')
+              : 'Waiting'}
           </p>
         </div>
       </div>
@@ -215,7 +244,7 @@ function DebateCard({ debate }: any) {
         {isParticipant ? (
           <button
             onClick={() => router.push(`/debate/${debate._id}`)}
-            className="brand-button flex-1"
+            className="w-full rounded-xl bg-teal-800 py-2 text-sm font-semibold text-white hover:bg-teal-900"
           >
             View Debate
           </button>
@@ -224,16 +253,17 @@ function DebateCard({ debate }: any) {
             <button
               onClick={() => handleJoin('A')}
               disabled={joining || !canJoinA}
-              className="flex-1 rounded-lg bg-teal-700 px-4 py-2 text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex-1 rounded-xl bg-teal-700 py-2 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-50"
             >
-              Join Side A
+              Join A
             </button>
+
             <button
               onClick={() => handleJoin('B')}
               disabled={joining || !canJoinB}
-              className="flex-1 rounded-lg bg-amber-600 px-4 py-2 text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex-1 rounded-xl bg-amber-600 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-50"
             >
-              Join Side B
+              Join B
             </button>
           </>
         )}
@@ -242,7 +272,6 @@ function DebateCard({ debate }: any) {
   );
 }
 
-// CreateDebateModal implementation
 function CreateDebateModal({ onClose, onSuccess }: any) {
   const [topic, setTopic] = useState('');
   const [description, setDescription] = useState('');
@@ -254,8 +283,8 @@ function CreateDebateModal({ onClose, onSuccess }: any) {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setSubmitting(true);
+
     try {
-      // Adapt payload shape if your API expects different fields
       await debateAPI.create({
         topic,
         description,
@@ -263,7 +292,9 @@ function CreateDebateModal({ onClose, onSuccess }: any) {
         sideA: { position: sideAPosition },
         sideB: { position: sideBPosition },
       });
+
       toast.success('Debate created');
+
       if (onSuccess) await onSuccess();
     } catch (error: any) {
       toast.error(error?.response?.data?.error || 'Failed to create debate');
@@ -274,86 +305,85 @@ function CreateDebateModal({ onClose, onSuccess }: any) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
       <form
         onSubmit={handleSubmit}
-        className="surface-card relative z-10 w-full max-w-xl p-6"
+        className="relative z-10 w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-lg"
       >
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="display-face text-lg font-semibold text-slate-900">Create Debate</h3>
-          <button type="button" onClick={onClose} className="text-slate-600 hover:text-slate-900">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-slate-900">
+            Create Debate
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-sm text-slate-500 hover:text-slate-800"
+          >
             Close
           </button>
         </div>
 
-        <div className="space-y-3">
-          <div>
-            <label className="mb-1 block text-sm text-slate-700">Topic</label>
+        <div className="space-y-4">
+          <input
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="Debate topic"
+            required
+            className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
+          />
+
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Description"
+            className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
+          />
+
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as any)}
+            className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
+          >
+            <option value="1v1">1 vs 1</option>
+            <option value="team">Team</option>
+          </select>
+
+          <div className="grid grid-cols-2 gap-3">
             <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-teal-600 focus:outline-none"
+              value={sideAPosition}
+              onChange={(e) => setSideAPosition(e.target.value)}
+              placeholder="Side A position"
+              className="rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
             />
-          </div>
 
-          <div>
-            <label className="mb-1 block text-sm text-slate-700">Description</label>
             <input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-teal-600 focus:outline-none"
+              value={sideBPosition}
+              onChange={(e) => setSideBPosition(e.target.value)}
+              placeholder="Side B position"
+              className="rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
             />
-          </div>
-
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="mb-1 block text-sm text-slate-700">Type</label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as '1v1' | 'team')}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-teal-600 focus:outline-none"
-              >
-                <option value="1v1">1 vs 1</option>
-                <option value="team">Team</option>
-              </select>
-            </div>
-
-            <div className="flex-1">
-              <label className="mb-1 block text-sm text-slate-700">Side A Position</label>
-              <input
-                value={sideAPosition}
-                onChange={(e) => setSideAPosition(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-teal-600 focus:outline-none"
-              />
-            </div>
-
-            <div className="flex-1">
-              <label className="mb-1 block text-sm text-slate-700">Side B Position</label>
-              <input
-                value={sideBPosition}
-                onChange={(e) => setSideBPosition(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-teal-600 focus:outline-none"
-              />
-            </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-5">
+        <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-slate-200 px-4 py-2 text-slate-700 transition hover:bg-slate-300"
-            disabled={submitting}
+            className="rounded-xl bg-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-300"
           >
             Cancel
           </button>
+
           <button
             type="submit"
-            className="brand-button"
             disabled={submitting}
+            className="rounded-xl bg-teal-800 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-900 disabled:opacity-50"
           >
-            {submitting ? 'Creating...' : 'Create Debate'}
+            {submitting ? 'Creating...' : 'Create'}
           </button>
         </div>
       </form>
