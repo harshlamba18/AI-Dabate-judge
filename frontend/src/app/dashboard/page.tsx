@@ -10,8 +10,8 @@ import {
   MessageSquare,
   LogOut,
 } from 'lucide-react';
-import { debateAPI } from '@/lib/api';
-import { getUser, removeToken, isAuthenticated } from '@/lib/auth';
+import { authAPI, debateAPI } from '@/lib/api';
+import { getUser, removeToken, isAuthenticated, setUser as setStoredUser } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
@@ -37,7 +37,17 @@ export default function Dashboard() {
         return;
       }
 
+      // Start with local cache, then replace with fresh server value.
       setUser(currentUser);
+
+      try {
+        const { data } = await authAPI.me();
+        setUser(data);
+        setStoredUser(data);
+      } catch {
+        // If profile refresh fails, keep cached user for this render.
+      }
+
       await loadDebates();
       setLoadingAuth(false);
     };
@@ -173,6 +183,7 @@ function DebateCard({ debate }: any) {
   const router = useRouter();
   const user = getUser();
   const [joining, setJoining] = useState(false);
+  const argumentLimit = debate?.settings?.argumentLimit ?? 5;
 
   const handleJoin = async (side: 'A' | 'B') => {
     setJoining(true);
@@ -214,6 +225,10 @@ function DebateCard({ debate }: any) {
 
           <span className="text-slate-500">
             {debate.type === '1v1' ? '1 vs 1' : 'Team'}
+          </span>
+
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
+            Limit: {argumentLimit} / side
           </span>
         </div>
       </div>
@@ -276,9 +291,11 @@ function CreateDebateModal({ onClose, onSuccess }: any) {
   const [topic, setTopic] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<'1v1' | 'team'>('1v1');
+  const [argumentLimit, setArgumentLimit] = useState<1 | 3 | 5>(3);
   const [sideAPosition, setSideAPosition] = useState('For');
-  const [sideBPosition, setSideBPosition] = useState('Against');
   const [submitting, setSubmitting] = useState(false);
+
+  const sideBPosition = sideAPosition === 'For' ? 'Against' : 'For';
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -289,8 +306,11 @@ function CreateDebateModal({ onClose, onSuccess }: any) {
         topic,
         description,
         type,
-        sideA: { position: sideAPosition },
-        sideB: { position: sideBPosition },
+        sideAPosition,
+        sideBPosition,
+        settings: {
+          argumentLimit,
+        },
       });
 
       toast.success('Debate created');
@@ -352,20 +372,46 @@ function CreateDebateModal({ onClose, onSuccess }: any) {
             <option value="team">Team</option>
           </select>
 
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              value={sideAPosition}
-              onChange={(e) => setSideAPosition(e.target.value)}
-              placeholder="Side A position"
-              className="rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
-            />
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Arguments Per Side
+            </label>
+            <select
+              value={argumentLimit}
+              onChange={(e) => setArgumentLimit(Number(e.target.value) as 1 | 3 | 5)}
+              className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
+            >
+              <option value={1}>1</option>
+              <option value={3}>3</option>
+              <option value={5}>5</option>
+            </select>
+          </div>
 
-            <input
-              value={sideBPosition}
-              onChange={(e) => setSideBPosition(e.target.value)}
-              placeholder="Side B position"
-              className="rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Side A
+              </label>
+              <select
+                value={sideAPosition}
+                onChange={(e) => setSideAPosition(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-200"
+              >
+                <option value="For">For</option>
+                <option value="Against">Against</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Side B
+              </label>
+              <input
+                value={sideBPosition}
+                readOnly
+                className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-600"
+              />
+            </div>
           </div>
         </div>
 

@@ -13,7 +13,16 @@ const router = express.Router();
 // Create debate
 router.post('/', authMiddleware, [
   body('topic').trim().notEmpty().withMessage('Topic required'),
-  body('type').isIn(['1v1', 'team']).withMessage('Invalid debate type')
+  body('type').isIn(['1v1', 'team']).withMessage('Invalid debate type'),
+  body('settings.argumentLimit')
+    .optional()
+    .custom((value) => {
+      const parsed = Number(value);
+      if (![1, 3, 5].includes(parsed)) {
+        throw new Error('Argument limit must be one of: 1, 3, 5');
+      }
+      return true;
+    })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -21,15 +30,27 @@ router.post('/', authMiddleware, [
   }
 
   try {
-    const { topic, description, type, settings, sideAPosition, sideBPosition } = req.body;
+    const { topic, description, type, settings, sideAPosition, sideBPosition, sideA, sideB } = req.body;
+
+    const parsedLimit = Number(settings?.argumentLimit);
+    const argumentLimit = [1, 3, 5].includes(parsedLimit) ? parsedLimit : 5;
+
+    const normalizedSettings = {
+      argumentLimit,
+      timeLimit: Number(settings?.timeLimit) || 300,
+      isPrivate: Boolean(settings?.isPrivate),
+    };
+
+    const normalizedSideAPosition = sideAPosition || sideA?.position || 'For';
+    const normalizedSideBPosition = sideBPosition || sideB?.position || 'Against';
 
     const debate = new Debate({
       topic,
       description,
       type,
-      sideA: { users: [req.userId], position: sideAPosition || 'For' },
-      sideB: { users: [], position: sideBPosition || 'Against' },
-      settings: settings || {},
+      sideA: { users: [req.userId], position: normalizedSideAPosition },
+      sideB: { users: [], position: normalizedSideBPosition },
+      settings: normalizedSettings,
       createdBy: req.userId
     });
 
