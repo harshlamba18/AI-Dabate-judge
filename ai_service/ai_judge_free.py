@@ -34,6 +34,24 @@ class DebateInput(BaseModel):
     topic: str
 
 
+@app.get("/")
+async def root():
+    return {
+        "service": "ai-debate-judge",
+        "status": "ok",
+        "message": "Service is running. Use POST /judge for evaluation.",
+        "endpoints": {
+            "judge": "POST /judge",
+            "health": "GET /health",
+        },
+    }
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 # --- Groq evaluation helper ---
 async def evaluate_argument(side_text: str, topic: str) -> tuple[float, str]:
     """
